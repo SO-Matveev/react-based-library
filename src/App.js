@@ -3,6 +3,8 @@ import axios from "axios";
 import "./App.css";
 import Book from "./components/book";
 import AddBookForm from "./components/addBookForm";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 class App extends React.Component {
   constructor() {
@@ -35,14 +37,21 @@ class App extends React.Component {
   };
   render() {
     return (
-      <div class="container">
+      <div className="container">
         <h1>Электронная библиотека</h1>
         <AddBookForm onSubmit={this.handleBookSubmit} />
-        {this.state.books.map((book) => (
+        {/* {this.state.books.map((book) => (
           <div key={book._id} className="mb-2">
             <Book book={book} />
           </div>
-        ))}
+        ))} */}
+        <Row xs={1} md={3} xl={4}>
+          {this.state.books.map((book) => (
+            <Col key={book._id}>
+              <Book book={book} />
+            </Col>
+          ))}
+        </Row>
       </div>
     );
   }
