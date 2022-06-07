@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 
 class AddBookForm extends React.Component {
   constructor() {
@@ -31,7 +30,9 @@ class AddBookForm extends React.Component {
     event.preventDefault();
     const { title, author } = this.state;
     const data = { title, author };
-    this.props.onSubmit(data);
+    if (typeof this.props.onSubmit === "function") {
+      this.props.onSubmit(data);
+    }
     this.setState({
       title: "",
       author: "",
