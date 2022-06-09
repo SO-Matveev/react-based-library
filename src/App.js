@@ -6,13 +6,16 @@ import Col from "react-bootstrap/Col";
 import Book from "./components/Book";
 import AddBookForm from "./components/AddBookForm";
 import BookDeleteConfirmation from "./components/BookDeleteConfirmation";
+import EditBookModal from "./components/EditBookModal";
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
+      editBook: null,
       books: [],
       isDeleteModalActive: false,
+      isEditModalActive: false,
     };
   }
   componentDidMount() {
@@ -39,6 +42,7 @@ class App extends React.Component {
         this.getBooks();
       });
   };
+  //Delete
   handleBookDelete = (bookId) => {
     this.setState({
       isDeleteModalActive: true,
@@ -59,9 +63,41 @@ class App extends React.Component {
         this.getBooks();
       });
   };
+  //Редактирование Книги
+  handleBookEdit = (book) => {
+    this.setState({
+      isEditModalActive: true,
+      editBook: book,
+    });
+  };
 
+  handleEditModalHide = () => {
+    this.setState({
+      editBook: null,
+      isEditModalActive: false,
+    });
+  };
+  handleEditBookSubmit = (data) => {
+    const { title, author, file } = data;
+    const { editBook } = this.state;
+    const formData = new FormData();
+    formData.append("author", author);
+    formData.append("title", title);
+    formData.append("cover", file);
+
+    axios
+      .put(
+        `https://nordic-books-api.herokuapp.com/books/${editBook._id}`,
+        formData
+      )
+      .then((res) => res.json)
+      .then((data) => {
+        this.getBooks();
+        this.handleEditModalHide();
+      });
+  };
   render() {
-    const { isDeleteModalActive } = this.state;
+    const { editBook, isDeleteModalActive, isEditModalActive } = this.state;
     return (
       <div className="container">
         <h1>Электронная библиотека</h1>
@@ -72,6 +108,7 @@ class App extends React.Component {
               <Book
                 book={book}
                 onDelete={() => this.handleBookDelete(book._id)}
+                onEdit={() => this.handleBookEdit(book)}
               />
             </Col>
           ))}
@@ -81,9 +118,16 @@ class App extends React.Component {
           onHide={this.handleDeleteModalHide}
           onConfirm={this.handleDeleteConfirm}
         />
+        {editBook && (
+          <EditBookModal
+            book={editBook}
+            show={isEditModalActive}
+            onHide={this.handleEditModalHide}
+            onSubmit={this.handleEditBookSubmit}
+          />
+        )}
       </div>
     );
   }
 }
-
 export default App;
