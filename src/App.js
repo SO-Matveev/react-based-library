@@ -3,14 +3,16 @@ import axios from "axios";
 import "./App.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Book from "./components/book";
-import AddBookForm from "./components/addBookForm";
+import Book from "./components/Book";
+import AddBookForm from "./components/AddBookForm";
+import BookDeleteConfirmation from "./components/BookDeleteConfirmation";
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       books: [],
+      isDeleteModalActive: false,
     };
   }
   componentDidMount() {
@@ -24,10 +26,12 @@ class App extends React.Component {
     });
   };
   handleBookSubmit = (data) => {
-    const { title, author } = data;
+    const { title, author, file } = data;
     const formData = new FormData();
     formData.append("author", author);
     formData.append("title", title);
+    formData.append("cover", file);
+
     axios
       .post("https://nordic-books-api.herokuapp.com/books", formData)
       .then((res) => res.json)
@@ -35,23 +39,48 @@ class App extends React.Component {
         this.getBooks();
       });
   };
+  handleBookDelete = (bookId) => {
+    this.setState({
+      isDeleteModalActive: true,
+      bookId,
+    });
+  };
+  handleDeleteModalHide = () => {
+    this.setState({
+      isDeleteModalActive: false,
+    });
+  };
+  handleDeleteConfirm = () => {
+    const { bookId } = this.state;
+    axios
+      .delete(`https://nordic-books-api.herokuapp.com/books/${bookId}`)
+      .then(() => {
+        this.handleDeleteModalHide();
+        this.getBooks();
+      });
+  };
+
   render() {
+    const { isDeleteModalActive } = this.state;
     return (
       <div className="container">
         <h1>Электронная библиотека</h1>
         <AddBookForm onSubmit={this.handleBookSubmit} />
-        {/* {this.state.books.map((book) => (
-          <div key={book._id} className="mb-2">
-            <Book book={book} />
-          </div>
-        ))} */}
         <Row xs={1} md={3} xl={4}>
           {this.state.books.map((book) => (
-            <Col key={book._id}>
-              <Book book={book} />
+            <Col key={book._id} className="d-flex">
+              <Book
+                book={book}
+                onDelete={() => this.handleBookDelete(book._id)}
+              />
             </Col>
           ))}
         </Row>
+        <BookDeleteConfirmation
+          show={isDeleteModalActive}
+          onHide={this.handleDeleteModalHide}
+          onConfirm={this.handleDeleteConfirm}
+        />
       </div>
     );
   }
