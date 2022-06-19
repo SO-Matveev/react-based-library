@@ -7,7 +7,7 @@ function Book(props) {
   const { book, onDelete, onEdit } = props;
   return (
     <Card border="info">
-      <Card.Body>
+      <Card.Body className="d-flex flex-column justify-content-between">
         <Card.Title>Книга: {book.title}</Card.Title>
         <Card.Text>Автор Книги: {book.author}</Card.Text>
         <Card.Img variant="top" src={book.imageUrl} style={{ maxWidth: 200 }} />

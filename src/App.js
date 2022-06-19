@@ -4,7 +4,7 @@ import "./App.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Book from "./components/Book";
-import AddBookForm from "./components/AddBookForm";
+import BookForm from "./components/BookForm";
 import BookDeleteConfirmation from "./components/BookDeleteConfirmation";
 import EditBookModal from "./components/EditBookModal";
 
@@ -101,10 +101,14 @@ class App extends React.Component {
     return (
       <div className="container">
         <h1>Электронная библиотека</h1>
-        <AddBookForm onSubmit={this.handleBookSubmit} />
+        <h3>Добавление книги</h3>
+        <BookForm
+          onSubmit={this.handleBookSubmit}
+          submitButtonText="Добавить"
+        />
         <Row xs={1} md={3} xl={4}>
           {this.state.books.map((book) => (
-            <Col key={book._id} className="d-flex">
+            <Col key={book._id} className="d-flex mt-3">
               <Book
                 book={book}
                 onDelete={() => this.handleBookDelete(book._id)}
